@@ -56,9 +56,5 @@ public class BHServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (false)
-            try {
-                new BHServer();
-            } catch (IOException e) {}
     }
 }
