@@ -23,14 +23,14 @@ public class ChessBoard {
 	private Piece[][] pieces = new Piece[8][8];
 
 	private boolean isSelected = false;
-	
+
 	private int num;
 
 	public ChessBoard(int num) {
-		super();
+		this();
 		this.num = num;
 	}
-	
+
 	public ChessBoard() {
 		for (int i = 0; i < 8; i++)
 			pieces[i][1] = new Piece(PieceColor.BLACK, Type.PAWN);
@@ -75,11 +75,16 @@ public class ChessBoard {
 							* cellSize, j * cellSize);
 			}
 		}
+		if (isSelected) {
+			g.setColor(Color.GREEN);
+			g.fillRect(ps.x * cellSize, ps.y * cellSize, cellSize, cellSize);
+		}
+
 	}
 
 	public void sendToServer(String s) {
 		Socket socket = null;
-		BufferedReader reader;
+		BufferedReader reader = null;
 		PrintWriter writer = null;
 		try {
 			socket = new Socket("192.168.1.252", 8080);
@@ -103,6 +108,14 @@ public class ChessBoard {
 		writer.write("X-APPLICATION\n");
 		writer.write(s);
 		writer.flush();
+
+		writer.close();
+		try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void move(Point from, Point to) {
@@ -112,8 +125,11 @@ public class ChessBoard {
 		pieces[to.x][to.y] = pieces[from.x][from.y];
 		pieces[from.x][from.y] = null;
 		// sendToServer(from, to);
-		System.out.println(from.x + " " + from.y + ":" + to.x + " " + to.y);
-		sendToServer("Move\n" + from.x + " " + from.y + ":" + to.x + " " + to.y);
+		// System.out.println("Move\n" + Client.team + "\n" + num + " " + from.x
+		// + " " + from.y
+		// + ":" + to.x + " " + to.y);
+		sendToServer("Move\n" + Client.team + "\n" + num + " " + from.x + " "
+				+ from.y + ":" + to.x + " " + to.y);
 		// wait for board
 		// redraw
 		Client.jap.repaint();
