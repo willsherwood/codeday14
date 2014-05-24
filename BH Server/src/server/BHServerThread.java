@@ -12,7 +12,7 @@ import java.util.TreeSet;
 public class BHServerThread extends Thread {
     PrintWriter out;
     BufferedReader in;
-    HashMap<String, HashSet<Socket>> listeners;
+    HashMap<String, TeamData> data;
     Socket s;
 
     public BHServerThread(Socket s) throws IOException {
@@ -22,6 +22,7 @@ public class BHServerThread extends Thread {
             .getOutputStream()));
         in = new BufferedReader(new InputStreamReader(s.getInputStream()));
         out = new PrintWriter(w);
+        data = new HashMap<String, TeamData>();
     }
     @Override
     public void run() {
@@ -35,20 +36,50 @@ public class BHServerThread extends Thread {
                     if (command.equals("Listen")) {
                         team = in.readLine();
                         System.out.println("Listener for team " + team);
-                        if (listeners.get(team) == null)
-                            listeners.put(team, new HashSet<Socket>());
-                        listeners.get(team).add(s);
+                        if (data.get(team) == null)
+                            data.put(team, new TeamData());
+                        data.get(team).getListeners().add(s);
                         // wait for data
                         try {
-                            s.wait();
+                            synchronized (s) {
+                                s.wait();
+                            }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        listeners.get(team).remove(s);
-                        if (listeners.get(team).isEmpty())
-                            listeners.remove(team);
+                        data.get(team).getListeners().remove(s);
+                        final String ateam = team;
+                        if (data.get(team).getListeners().isEmpty())
+                            new Thread() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        sleep(30000);
+                                    } catch (Exception e) {
+                                        // lol
+                                    }
+                                    if (data.get(ateam) != null && data.get
+                                        (ateam).getListeners().isEmpty())
+                                        data.remove(ateam);
+                                }
+                            }.start();
+                    } else if (command.equals("Move")) {
+                        team = in.readLine();
+                        String move = in.readLine();
+                        System.out.println("Moving " + move + " for " + team);
+                        TeamData d = data.get(team);
+                        if (d != null)
+                            for (Socket socket : d.getListeners()) {
+                                new PrintWriter(socket.getOutputStream())
+                                    .print(move);
+                                synchronized (socket) {
+                                    socket.notify();
+                                }
+                            }
+                        ;
                     } else {
                         out.println("Invalid command.");
+                        System.out.println(command);
                     }
                 } catch (IOException e) {
                     // can't read anymore
