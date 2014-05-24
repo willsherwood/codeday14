@@ -76,8 +76,10 @@ public class ChessBoard {
 			}
 		}
 		if (isSelected) {
-			g.setColor(Color.GREEN);
-			g.fillRect(ps.x * cellSize, ps.y * cellSize, cellSize, cellSize);
+			Color s = new Color(0, 255, 0, 122);
+			g.setColor(s);
+			g.fillRect(ps.x * cellSize, !inverted ? ps.y * cellSize : (7 - ps.y)
+					* cellSize, cellSize, cellSize);
 		}
 
 	}

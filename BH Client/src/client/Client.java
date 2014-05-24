@@ -41,8 +41,10 @@ public class Client extends JApplet {
 				boolean board1 = false;
 				if (x > 60 * 8)
 					x -= 24;
-				else
+				else {
 					board1 = true;
+					y = 60*8 - y;
+				}
 				x /= 60;
 				y /= 60;
 				(board1 ? a : b).select(board1?x:x-8, y);
@@ -73,6 +75,7 @@ public class Client extends JApplet {
 	
 	public static class A implements Runnable {
 		public void run() {
+			System.out.println("Listener thread");
 			Socket socket = null;
 			PrintWriter writer = null;
 			BufferedReader reader = null;
@@ -100,15 +103,15 @@ public class Client extends JApplet {
 			writer.write("Listen\n" + team + "\n");
 			// write some move
 			writer.flush();
-			writer.close();
 			try {
 				String move = reader.readLine();
 				// do something
 				System.out.println("Received: " + move);
+				writer.close();
 				reader.close();
 				// make another listener
 				new Thread(new A()).start();
-			} catch (Throwable t) {}
+			} catch (Throwable t) {writer.close();}
 		}
 	}
 }
