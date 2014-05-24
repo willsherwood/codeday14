@@ -2,8 +2,16 @@ package chessboard;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.HeadlessException;
 import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 public class ChessBoard {
 
@@ -54,6 +62,31 @@ public class ChessBoard {
 					pieces[i][inverted?7-j:0+j].drawPiece(g, i * cellSize, j * cellSize);
 			}
 		}
+	}
+	
+	public void sendToServer() {
+		Socket socket = null;
+		try {
+			socket = new Socket(JOptionPane.showInputDialog("Hostname?"), 8080);
+		} catch (HeadlessException | IOException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			writer = new PrintWriter(socket.getOutputStream());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			reader = new BufferedReader(new InputStreamReader(
+					socket.getInputStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		writer.write(user+"\n");
+		writer.write(team+"\n");
 	}
 
 	public void move(Point from, Point to) {
