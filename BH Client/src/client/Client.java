@@ -1,3 +1,4 @@
+package client;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
 import java.awt.image.BufferedImage;
@@ -20,8 +21,7 @@ public class Client extends JApplet {
 	private BufferedImage aa;
 	private BufferedImage bb;
 
-	private String user;
-	private String team;
+	public static String team;
 
 	public void init() {
 		a = new ChessBoard();
@@ -36,7 +36,8 @@ public class Client extends JApplet {
 				PrintWriter writer = null;
 				BufferedReader reader = null;
 				try {
-					socket = new Socket(JOptionPane.showInputDialog("Hostname?"), 8080);
+					socket = new Socket(
+							JOptionPane.showInputDialog("Hostname?"), 8080);
 				} catch (HeadlessException | IOException e) {
 					e.printStackTrace();
 				}
@@ -54,8 +55,7 @@ public class Client extends JApplet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				writer.write("Username\n" + user+"\n");
-				writer.write("Move\n" + team+"\n");
+				writer.write("Move\n" + team + "\n");
 				// write some move
 			}
 		}.start();

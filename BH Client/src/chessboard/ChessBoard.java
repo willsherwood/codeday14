@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import client.Client;
+
 public class ChessBoard {
 
 	private List<Piece> piecesTaken;
@@ -46,7 +48,7 @@ public class ChessBoard {
 	}
 
 	public void drawBoard(Graphics g, int cellSize, boolean inverted) {
-		g.setColor(inverted?Color.PINK:Color.RED);
+		g.setColor(inverted ? Color.PINK : Color.RED);
 		for (int i = 0; i < 8; i++) {
 			if (g.getColor() == Color.RED)
 				g.setColor(Color.PINK);
@@ -58,14 +60,17 @@ public class ChessBoard {
 				else
 					g.setColor(Color.RED);
 				g.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
-				if (pieces[i][inverted?7-j:0+j] != null)
-					pieces[i][inverted?7-j:0+j].drawPiece(g, i * cellSize, j * cellSize);
+				if (pieces[i][inverted ? 7 - j : 0 + j] != null)
+					pieces[i][inverted ? 7 - j : 0 + j].drawPiece(g, i
+							* cellSize, j * cellSize);
 			}
 		}
 	}
-	
+
 	public void sendToServer() {
 		Socket socket = null;
+		BufferedReader reader;
+		PrintWriter writer = null;
 		try {
 			socket = new Socket(JOptionPane.showInputDialog("Hostname?"), 8080);
 		} catch (HeadlessException | IOException e) {
@@ -85,8 +90,7 @@ public class ChessBoard {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		writer.write(user+"\n");
-		writer.write(team+"\n");
+		writer.write(Client.team + "\n");
 	}
 
 	public void move(Point from, Point to) {
@@ -95,7 +99,6 @@ public class ChessBoard {
 			pieces[to.x][to.y] = pieces[from.x][from.y];
 		}
 		pieces[from.x][from.y] = null;
-		
 		// sendToServer(from, to);
 		// wait for board
 		// redraw
