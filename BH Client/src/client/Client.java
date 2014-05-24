@@ -29,8 +29,8 @@ public class Client extends JApplet {
 
 	public void init() {
 		jap = this;
-		a = new ChessBoard();
-		b = new ChessBoard();
+		a = new ChessBoard(0);
+		b = new ChessBoard(1);
 		aa = new BufferedImage(60 * 8, 60 * 8, BufferedImage.TYPE_INT_RGB);
 		bb = new BufferedImage(60 * 8, 60 * 8, BufferedImage.TYPE_INT_RGB);
 		addMouseListener(new EmptyMouseListener() {
@@ -45,7 +45,7 @@ public class Client extends JApplet {
 					board1 = true;
 				x /= 60;
 				y /= 60;
-				(board1 ? a : b).select(x, y);
+				(board1 ? a : b).select(board1?x:x-8, y);
 			}
 		});
 		new Thread() {

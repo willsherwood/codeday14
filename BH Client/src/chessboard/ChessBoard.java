@@ -23,7 +23,14 @@ public class ChessBoard {
 	private Piece[][] pieces = new Piece[8][8];
 
 	private boolean isSelected = false;
+	
+	private int num;
 
+	public ChessBoard(int num) {
+		super();
+		this.num = num;
+	}
+	
 	public ChessBoard() {
 		for (int i = 0; i < 8; i++)
 			pieces[i][1] = new Piece(PieceColor.BLACK, Type.PAWN);
@@ -101,12 +108,12 @@ public class ChessBoard {
 	public void move(Point from, Point to) {
 		if (pieces[to.x][to.y] != null) {
 			piecesTaken.add(pieces[to.x][to.y]);
-			pieces[to.x][to.y] = pieces[from.x][from.y];
 		}
+		pieces[to.x][to.y] = pieces[from.x][from.y];
 		pieces[from.x][from.y] = null;
 		// sendToServer(from, to);
 		System.out.println(from.x + " " + from.y + ":" + to.x + " " + to.y);
-		sendToServer(from.x + " " + from.y + ":" + to.x + " " + to.y);
+		sendToServer("Move\n" + from.x + " " + from.y + ":" + to.x + " " + to.y);
 		// wait for board
 		// redraw
 		Client.jap.repaint();
@@ -121,6 +128,7 @@ public class ChessBoard {
 			ps = new Point(x, y);
 		} else {
 			move(ps, new Point(x, y));
+			isSelected = false;
 		}
 	}
 }
