@@ -27,6 +27,7 @@ public class BHServer {
     public BHServer(int port, int backlog) throws IOException
     {
         ss = new ServerSocket(port, backlog);
+        running = true;
     }
 
     public static String getServerTime() {
@@ -45,6 +46,7 @@ public class BHServer {
                 new BHServerThread(s).start();
             } catch (IOException e) {
                 running = false;
+                e.printStackTrace();
                 break;
             }
         }
