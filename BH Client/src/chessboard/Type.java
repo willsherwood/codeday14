@@ -8,20 +8,28 @@ import javax.imageio.ImageIO;
 
 public enum Type {
 
-	PAWN(), ROOK, KNIGHT, BISHOP, KING, QUEEN;
+	PAWN, ROOK, KNIGHT, BISHOP, KING, QUEEN;
 
-	private Image i;
+	private Image wi;
+	private Image wb;
+	private boolean w;
+	private boolean b;
 
-	public Image getImage() {
-		System.out.println(name()+".png");
-		if (i==null) {
+	public Image getImage(boolean white) {
+		if (white) {
 			try {
-				i = ImageIO.read(getClass().getResourceAsStream(name()+".png"));
+				wi = ImageIO.read(getClass().getResourceAsStream(
+						(white ? "W" : "B") + name() + ".png"));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+			return wi;
+		} else {
+			try {
+				wb = ImageIO.read(getClass().getResourceAsStream(
+						(white ? "W" : "B") + name() + ".png"));
+			} catch (IOException e) {
+			}
+			return wb;
 		}
-		return i;
 	}
 }

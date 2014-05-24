@@ -25,6 +25,6 @@ public class Client extends JApplet {
 	}
 	
 	public void paint(Graphics g) {
-		a.drawBoard(g, 48);
+		a.drawBoard(g, 60);
 	}
 }
