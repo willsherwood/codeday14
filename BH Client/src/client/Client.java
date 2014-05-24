@@ -1,6 +1,8 @@
 package client;
+
 import java.awt.Graphics;
 import java.awt.HeadlessException;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +17,8 @@ import chessboard.ChessBoard;
 
 public class Client extends JApplet {
 
+	public static JApplet jap;
+	
 	private ChessBoard a;
 	private ChessBoard b;
 
@@ -24,11 +28,26 @@ public class Client extends JApplet {
 	public static String team;
 
 	public void init() {
+		jap = this;
 		a = new ChessBoard();
 		b = new ChessBoard();
 		aa = new BufferedImage(60 * 8, 60 * 8, BufferedImage.TYPE_INT_RGB);
 		bb = new BufferedImage(60 * 8, 60 * 8, BufferedImage.TYPE_INT_RGB);
-
+		addMouseListener(new EmptyMouseListener() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				int x = e.getX();
+				int y = e.getY();
+				boolean board1 = false;
+				if (x > 60 * 8)
+					x -= 24;
+				else
+					board1 = true;
+				x /= 60;
+				y /= 60;
+				(board1 ? a : b).select(x, y);
+			}
+		});
 		new Thread() {
 			@Override
 			public void run() {
@@ -37,7 +56,7 @@ public class Client extends JApplet {
 				BufferedReader reader = null;
 				try {
 					socket = new Socket(
-							JOptionPane.showInputDialog("Hostname?"), 8080);
+							"192.168.1.252", 8080);
 				} catch (HeadlessException | IOException e) {
 					e.printStackTrace();
 				}
@@ -55,8 +74,10 @@ public class Client extends JApplet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				writer.write("X-APPLICATION\n");
 				writer.write("Move\n" + team + "\n");
 				// write some move
+				writer.flush();
 			}
 		}.start();
 	}

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -17,9 +18,11 @@ import client.Client;
 
 public class ChessBoard {
 
-	private List<Piece> piecesTaken;
+	private List<Piece> piecesTaken = new ArrayList<>();
 
 	private Piece[][] pieces = new Piece[8][8];
+
+	private boolean isSelected = false;
 
 	public ChessBoard() {
 		for (int i = 0; i < 8; i++)
@@ -67,12 +70,12 @@ public class ChessBoard {
 		}
 	}
 
-	public void sendToServer() {
+	public void sendToServer(String s) {
 		Socket socket = null;
 		BufferedReader reader;
 		PrintWriter writer = null;
 		try {
-			socket = new Socket(JOptionPane.showInputDialog("Hostname?"), 8080);
+			socket = new Socket("192.168.1.252", 8080);
 		} catch (HeadlessException | IOException e) {
 			e.printStackTrace();
 		}
@@ -90,7 +93,9 @@ public class ChessBoard {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		writer.write(Client.team + "\n");
+		writer.write("X-APPLICATION\n");
+		writer.write(s);
+		writer.flush();
 	}
 
 	public void move(Point from, Point to) {
@@ -100,7 +105,22 @@ public class ChessBoard {
 		}
 		pieces[from.x][from.y] = null;
 		// sendToServer(from, to);
+		System.out.println(from.x + " " + from.y + ":" + to.x + " " + to.y);
+		sendToServer(from.x + " " + from.y + ":" + to.x + " " + to.y);
 		// wait for board
 		// redraw
+		Client.jap.repaint();
+
+	}
+
+	private Point ps;
+
+	public void select(int x, int y) {
+		if (!isSelected) {
+			isSelected = true;
+			ps = new Point(x, y);
+		} else {
+			move(ps, new Point(x, y));
+		}
 	}
 }
