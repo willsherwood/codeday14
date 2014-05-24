@@ -34,10 +34,19 @@ public class BHServerThread extends Thread {
                     String command = in.readLine();
                     if (command.equals("Listen")) {
                         team = in.readLine();
+                        System.out.println("Listener for team " + team);
                         if (listeners.get(team) == null)
                             listeners.put(team, new HashSet<Socket>());
                         listeners.get(team).add(s);
                         // wait for data
+                        try {
+                            s.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        listeners.get(team).remove(s);
+                        if (listeners.get(team).isEmpty())
+                            listeners.remove(team);
                     } else {
                         out.println("Invalid command.");
                     }
