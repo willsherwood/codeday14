@@ -16,10 +16,29 @@ public class ChessBoard {
 			pieces[i][1] = new Piece(PieceColor.BLACK, Type.PAWN);
 		for (int i = 0; i < 8; i++)
 			pieces[i][6] = new Piece(PieceColor.WHITE, Type.PAWN);
+		// black setup
+		pieces[0][0] = new Piece(PieceColor.BLACK, Type.ROOK);
+		pieces[1][0] = new Piece(PieceColor.BLACK, Type.KNIGHT);
+		pieces[2][0] = new Piece(PieceColor.BLACK, Type.BISHOP);
+		pieces[3][0] = new Piece(PieceColor.BLACK, Type.QUEEN);
+		pieces[4][0] = new Piece(PieceColor.BLACK, Type.KING);
+		pieces[5][0] = new Piece(PieceColor.BLACK, Type.BISHOP);
+		pieces[6][0] = new Piece(PieceColor.BLACK, Type.KNIGHT);
+		pieces[7][0] = new Piece(PieceColor.BLACK, Type.ROOK);
+		// white setup
+		pieces[0][7] = new Piece(PieceColor.WHITE, Type.ROOK);
+		pieces[1][7] = new Piece(PieceColor.WHITE, Type.KNIGHT);
+		pieces[2][7] = new Piece(PieceColor.WHITE, Type.BISHOP);
+		pieces[3][7] = new Piece(PieceColor.WHITE, Type.QUEEN);
+		pieces[4][7] = new Piece(PieceColor.WHITE, Type.KING);
+		pieces[5][7] = new Piece(PieceColor.WHITE, Type.BISHOP);
+		pieces[6][7] = new Piece(PieceColor.WHITE, Type.KNIGHT);
+		pieces[7][7] = new Piece(PieceColor.WHITE, Type.ROOK);
+
 	}
 
-	public void drawBoard(Graphics g, int cellSize) {
-		g.setColor(Color.RED);
+	public void drawBoard(Graphics g, int cellSize, boolean inverted) {
+		g.setColor(inverted?Color.PINK:Color.RED);
 		for (int i = 0; i < 8; i++) {
 			if (g.getColor() == Color.RED)
 				g.setColor(Color.PINK);
@@ -31,8 +50,8 @@ public class ChessBoard {
 				else
 					g.setColor(Color.RED);
 				g.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
-				if (pieces[i][j] != null)
-					pieces[i][j].drawPiece(g, i * cellSize, j * cellSize);
+				if (pieces[i][inverted?7-j:0+j] != null)
+					pieces[i][inverted?7-j:0+j].drawPiece(g, i * cellSize, j * cellSize);
 			}
 		}
 	}
@@ -43,5 +62,9 @@ public class ChessBoard {
 			pieces[to.x][to.y] = pieces[from.x][from.y];
 		}
 		pieces[from.x][from.y] = null;
+		
+		// sendToServer(from, to);
+		// wait for board
+		// redraw
 	}
 }
