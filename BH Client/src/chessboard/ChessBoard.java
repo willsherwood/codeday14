@@ -11,12 +11,18 @@ public class ChessBoard {
 	
 	private Piece[][] pieces = new Piece[8][8];
 	
+	public ChessBoard () {
+		pieces[0][0] = new Piece(PieceColor.WHITE, Type.PAWN);
+	}
+	
 	public void drawBoard (Graphics g, int cellSize) {
 		for (int i=0; i<8; i++) {
 			g.setColor(new Color(~g.getColor().getRGB()));
 			for (int j=0; j<8; j++) {
 				g.setColor(new Color(~g.getColor().getRGB()));
 				g.fillRect(i*cellSize, j*cellSize, cellSize, cellSize);
+				if (pieces[i][j] != null)
+					pieces[i][j].drawPiece(g, i*cellSize, j*cellSize);
 			}
 		}
 	}

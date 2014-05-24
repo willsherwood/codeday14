@@ -15,7 +15,7 @@ public enum Type {
 	public Image getImage() {
 		if (i==null) {
 			try {
-				i = ImageIO.read(getClass().getResourceAsStream(".png"));
+				i = ImageIO.read(getClass().getResourceAsStream("res/"+name()+".png"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
