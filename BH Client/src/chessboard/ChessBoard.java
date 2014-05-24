@@ -22,6 +22,10 @@ public class ChessBoard {
 	}
 	
 	public void move(Point from, Point to) {
-		
+		if (pieces[to.x][to.y] != null) {
+			piecesTaken.add(pieces[to.x][to.y]);
+			pieces[to.x][to.y] = pieces[from.x][from.y];
+		}
+		pieces[from.x][from.y] = null;
 	}
 }
