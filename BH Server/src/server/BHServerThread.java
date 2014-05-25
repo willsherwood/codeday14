@@ -67,7 +67,8 @@ public class BHServerThread extends Thread {
                         // wait for data
                         final Message mm = m;
                         final BufferedReader rr = in;
-                        new Thread(new Runnable() {
+                        Thread tt;
+                        (tt = new Thread(new Runnable() {
                             public void run() {
                                 try {
                                     rr.readLine();
@@ -79,14 +80,16 @@ public class BHServerThread extends Thread {
                                     }
                                 }
                             }
-                        }).start();
+                        })).start();
                         try {
                             synchronized (m) {
                                 m.wait();
                             }
                         } catch (InterruptedException e) {
+                            tt.interrupt();
                             e.printStackTrace();
                         }
+                        tt.interrupt();
                         out.println(m.str);
                         System.out.println("Received move (notified)");
                         data.get(team).getListeners().remove(m);

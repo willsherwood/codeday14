@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="BH Server:jar">
+    <output-path>$PROJECT_DIR$/BH Server/downloads</output-path>
+    <root id="archive" name="Server.jar">
+      <element id="module-output" name="BH Server" />
+      <element id="module-output" name="BH Client" />
+    </root>
+  </artifact>
+</component>
