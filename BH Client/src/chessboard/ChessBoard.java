@@ -22,7 +22,7 @@ public class ChessBoard {
 
 	public Piece[][] pieces = new Piece[8][8];
 
-	private boolean isSelected = false;
+	public boolean isSelected = false;
 
 	private int num;
 
@@ -156,7 +156,7 @@ public class ChessBoard {
 
 	private Point ps;
 
-	public void select(int x, int y) {
+	public void clicked(int x, int y) {
 		if (!isSelected) {
 			isSelected = true;
 			ps = new Point(x, y);

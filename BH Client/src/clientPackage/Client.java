@@ -13,6 +13,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import javax.swing.JApplet;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import chessboard.ChessBoard;
 import chessboard.Piece;
@@ -29,6 +31,11 @@ public class Client extends JApplet {
 	private BufferedImage aa;
 	private BufferedImage bb;
 
+	private boolean ratchetChessBoolean = false;
+	private boolean ratchetChessBoolean2 = false;
+	private Piece ratchetChessPiece = null;
+	private int ratchetChessInt = 0;
+	
 	public static String team = "A";
 
 	public void init() {
@@ -43,6 +50,15 @@ public class Client extends JApplet {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e)) {
+					ratchetChessBoolean = false;
+					ratchetChessPiece = null;
+					ratchetChessInt = 0;
+					a.isSelected = false;
+					b.isSelected = false;
+					jap.repaint();
+					return;
+				}
 				int x = e.getX();
 				int y = e.getY();
 				if (y < 60 * 8) {
@@ -55,7 +71,20 @@ public class Client extends JApplet {
 					}
 					x /= 60;
 					y /= 60;
-					(board1 ? a : b).select(board1 ? x : x - 8, y);
+					if (ratchetChessBoolean) {
+						// make sure board1 && !ratchetChessBoolean2
+						if (board1 ^ ratchetChessBoolean2 && (board1 ? a : b).pieces[board1 ? x : x - 8][y] == null) {
+							ratchetChessBoolean = false;
+							b.sendToServer("Move\n" + team + "\nAdd "+(ratchetChessBoolean2?"1":"0")+" "
+									+ ratchetChessPiece.color + " " + ratchetChessPiece.type + " " + (board1 ? x : x - 8) + " "
+									+ y + " " + ratchetChessInt);
+							ratchetChessPiece = null;
+							ratchetChessInt = 0;
+						} else {
+							alert("Invalid addition");
+						}
+					} else
+						(board1 ? a : b).clicked(board1 ? x : x - 8, y);
 					repaint();
 				} else {
 					boolean board1 = false;
@@ -67,12 +96,39 @@ public class Client extends JApplet {
 						board1 = true;
 					x /= 60;
 					int index = x + y * 8;
+
 					if (board1) {
+						if (index < b.piecesTaken.size()) {
+							/*Piece p = b.piecesTaken.get(index);
+							b.sendToServer("Move\n" + team + "\nAdd 0 "
+									+ p.color + " " + p.type + " " + 4 + " "
+									+ 4 + " " + index);*/
+							ratchetChessBoolean = true;
+							ratchetChessBoolean2 = false;
+							ratchetChessPiece = b.piecesTaken.get(index);
+							ratchetChessInt = index;
+						}
 						System.out.println(index);
 					} else {
-						System.out.println(index);
+						if (index < a.piecesTaken.size()) {
+							/*
+							Piece p = a.piecesTaken.get(index);
+							a.sendToServer("Move\n" + team + "\nAdd 1 "
+									+ p.color + " " + p.type + " " + 4 + " "
+									+ 4 + " " + index);
+							System.out.println(index);
+							*/
+							ratchetChessBoolean = true;
+							ratchetChessBoolean2 = true;
+							ratchetChessPiece = a.piecesTaken.get(index);
+							ratchetChessInt = index;
+						}
 					}
 				}
+			}
+
+			private void alert(String string) {
+				JOptionPane.showMessageDialog(null, string);
 			}
 		});
 		new Thread(new A()).start();
@@ -95,7 +151,7 @@ public class Client extends JApplet {
 		b.drawBoard(bb.getGraphics(), 60, false);
 		g.drawImage(aa, 0, 0, null);
 		g.drawImage(bb, 60 * 8 + 24, 0, null);
-		g.clearRect(0, 60 * 80, 60 * 80 * 2 + 24, 60);
+		g.clearRect(0, 60 * 8, 60 * 8 * 2 + 24, 60 * 4);
 		int i = 0;
 		for (Piece p : b.piecesTaken) {
 			p.drawPiece(g, i++ % 8 * 60, 60 * 8 + ((i - 1) / 8) * 60);
@@ -108,7 +164,7 @@ public class Client extends JApplet {
 	}
 
 	public static class A implements Runnable {
-		public void run() {
+		public synchronized void run() {
 			System.out.println("Listener thread");
 			Socket socket = null;
 			PrintWriter writer = null;
@@ -140,22 +196,32 @@ public class Client extends JApplet {
 				String move = reader.readLine();
 				// do something
 				System.out.println("Received: " + move);
-				if (move.equals("Add")) {
-					move = reader.readLine();
+				if (move.startsWith("Add")) {
+					System.out.println("adding");
 					String[] t = move.split(" ");
-					Piece p = new Piece(PieceColor.valueOf(t[1]), Type.valueOf(t[2]));
-					(t[0].equals("0")?a:b).piecesTaken.remove(Integer.parseInt(t[5]));
-					(t[0].equals("0")?a:b).pieces[Integer.parseInt(t[3])][Integer.parseInt(t[4])] = p;
+					Piece p = new Piece(PieceColor.valueOf(t[2]),
+							Type.valueOf(t[3]));
+					System.out.println("past P : " + p);
+					System.out.println((t[1].equals("0") ? b : a).piecesTaken);
+					(t[1].equals("0") ? b : a).piecesTaken.remove(Integer
+							.parseInt(t[6]));
+					System.out.println("past t");
+					(t[1].equals("0") ? a : b).pieces[Integer.parseInt(t[4])][Integer
+							.parseInt(t[5])] = p;
+					jap.repaint();
+					System.out.println("this");
+				} else {
+					String[] tt = move.split("[ :]");
+					(move.charAt(0) == '0' ? Client.a : Client.b).moveBoard(
+							new Point(Integer.parseInt(tt[1]), Integer
+									.parseInt(tt[2])),
+							new Point(Integer.parseInt(tt[3]), Integer
+									.parseInt(tt[4])));
+					// make another listener
 				}
+				System.out.println("Leaving ratchet chess");
 				writer.close();
 				reader.close();
-				String[] tt = move.split("[ :]");
-				(move.charAt(0) == '0' ? Client.a : Client.b).moveBoard(
-						new Point(Integer.parseInt(tt[1]), Integer
-								.parseInt(tt[2])),
-						new Point(Integer.parseInt(tt[3]), Integer
-								.parseInt(tt[4])));
-				// make another listener
 				new Thread(new A()).start();
 			} catch (Throwable t) {
 				writer.close();
