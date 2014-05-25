@@ -54,12 +54,18 @@ public class Client extends JApplet {
 				} else {
 					boolean board1 = false;
 					y -= 60 * 8;
-					y /= 4;
+					y /= 60;
 					if (x > 60 * 8)
-						x -= 24;
+						x -= 24 + 60 * 8;
 					else
 						board1 = true;
+					x /= 60;
 					int index = x + y * 8;
+					if (board1) {
+						System.out.println(index);
+					} else {
+						System.out.println(index);
+					}
 				}
 			}
 		});
