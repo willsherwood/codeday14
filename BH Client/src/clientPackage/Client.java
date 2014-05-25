@@ -145,7 +145,9 @@ public class Client extends JApplet {
 						// make sure board1 && !ratchetChessBoolean2
 						if (board1
 								^ ratchetChessBoolean2
-								&& (board1 ? a : b).pieces[board1 ? x : x - 8][y] == null) {
+								&& (board1 ? a : b).pieces[board1 ? x : x - 8][y] == null
+								&& ((board1 ? a : b).whitesTurn ^ ratchetChessPiece.color == PieceColor.BLACK)) {
+							
 							ratchetChessBoolean = false;
 							b.sendToServer("Move\n" + team + "\nAdd "
 									+ (ratchetChessBoolean2 ? "1" : "0") + " "
@@ -247,9 +249,11 @@ public class Client extends JApplet {
 	}
 
 	public synchronized void paint(Graphics g) {
-		g.setFont(new Font("Arial", -1, 24));
+		g.clearRect(0, 0, 60 * 8 * 2 + 24, 32);
+		g.setFont(new Font("Arial", -1, 20));
 		g.drawString("Player "+(num+1) + (num%2==0?" WHITE":" BLACK"), 16, 30);
-		
+		g.drawString((a.whitesTurn?"WHITE":"BLACK")+"'s turn", 200, 30);
+		g.drawString((b.whitesTurn?"WHITE":"BLACK")+"'s turn", 60*8+24+200, 30);
 		a.drawBoard(aa.getGraphics(), 60, !(num == 0 || num == 3));
 		b.drawBoard(bb.getGraphics(), 60, !(num == 1 || num == 2));
 		g.drawImage(num < 2 ? aa : bb, 0, 32, null);
@@ -318,6 +322,9 @@ public class Client extends JApplet {
 							.parseInt(t[6]));
 					(t[1].equals("0") ? a : b).pieces[Integer.parseInt(t[4])][Integer
 							.parseInt(t[5])] = p;
+					(t[1].equals("0") ? a : b).whitesTurn = !t[2].equals("WHITE");
+//					System.out.println("A"+a.whitesTurn);
+//					System.out.println("B"+b.whitesTurn);
 					jap.repaint();
 				} else {
 					String[] tt = move.split("[ :]");

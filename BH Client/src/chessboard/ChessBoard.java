@@ -31,6 +31,9 @@ public class ChessBoard {
 		this.num = num;
 	}
 
+	
+	public boolean whitesTurn = true;
+	
 	public ChessBoard() {
 		for (int i = 0; i < 8; i++)
 			pieces[i][1] = new Piece(PieceColor.BLACK, Type.PAWN);
@@ -133,6 +136,13 @@ public class ChessBoard {
 				isSelected = false;
 				return;
 			}
+		if (pieces[from.x][from.y].color == PieceColor.WHITE) {
+			if (!whitesTurn)
+				return;
+		} else {
+			if (whitesTurn)
+				return;
+		}
 		// sendToServer(from, to);
 		// System.out.println("Move\n" + Client.team + "\n" + num + " " + from.x
 		// + " " + from.y
@@ -144,6 +154,13 @@ public class ChessBoard {
 	}
 
 	public void moveBoard(Point from, Point to) {
+		
+		if (pieces[from.x][from.y].color == PieceColor.WHITE) {
+			whitesTurn = false;
+		} else {
+			whitesTurn = true;
+		}
+		
 		// castle
 		if (pieces[from.x][from.y].type.equals(Type.KING)) {
 			if (Math.abs(from.x - to.x) == 2 && from.y == to.y) {
