@@ -28,7 +28,7 @@ public class Client extends JApplet {
 	private int yolo1;
 	private int yolo2;
 	public static JApplet jap;
-
+	public static String ip = "192.168.1.252";
 	public static ChessBoard a;
 	public static ChessBoard b;
 
@@ -48,6 +48,7 @@ public class Client extends JApplet {
 	public static Socket listenerSocket = null;
 
 	public void init() {
+		ip = JOptionPane.showInputDialog("Please enter IP address without the port");
 		team = JOptionPane.showInputDialog("Please enter room name");
 		if (team == null)
 			team = "A";
@@ -60,7 +61,7 @@ public class Client extends JApplet {
 		PrintWriter writer = null;
 		BufferedReader reader = null;
 		try {
-			socket = new Socket("192.168.1.252", 8080);
+			socket = new Socket(ip, 8080);
 		} catch (HeadlessException | IOException e) {
 			e.printStackTrace();
 		}
@@ -287,7 +288,7 @@ public class Client extends JApplet {
 			PrintWriter writer = null;
 			BufferedReader reader = (BufferedReader) (currentReader = null);
 			try {
-				socket = listenerSocket = new Socket("192.168.1.252", 8080);
+				socket = listenerSocket = new Socket(ip, 8080);
 			} catch (HeadlessException | IOException e) {
 				e.printStackTrace();
 			}

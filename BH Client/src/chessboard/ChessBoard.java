@@ -96,7 +96,7 @@ public class ChessBoard {
 		BufferedReader reader = null;
 		PrintWriter writer = null;
 		try {
-			socket = new Socket("192.168.1.252", 8080);
+			socket = new Socket(Client.ip, 8080);
 		} catch (HeadlessException | IOException e) {
 			e.printStackTrace();
 		}
