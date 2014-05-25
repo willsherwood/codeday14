@@ -2,6 +2,7 @@ package server;
 
 import chessboard.ChessBoard;
 
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashSet;
 
@@ -9,16 +10,18 @@ import java.util.HashSet;
  * Created by firefly431 on 5/24/14.
  */
 public class TeamData {
-    HashSet<Socket> listeners;
-    ChessBoard a, b;
+    HashSet<Message> listeners;
 
     public TeamData() {
-        listeners = new HashSet<Socket>();
-        a = new ChessBoard(0);
-        b = new ChessBoard(1);
+        listeners = new HashSet<Message>();
     }
 
-    public HashSet<Socket> getListeners() {
+    @Override
+    public String toString() {
+        return "TeamData with " + listeners.size() + " listeners";
+    }
+
+    public HashSet<Message> getListeners() {
         return listeners;
     }
 }

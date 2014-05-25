@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Thread for each client accepted
@@ -12,7 +13,9 @@ import java.util.TreeSet;
 public class BHServerThread extends Thread {
     PrintWriter out;
     BufferedReader in;
-    HashMap<String, TeamData> data;
+    static ConcurrentHashMap<String, TeamData> data = new
+        ConcurrentHashMap<String,
+        TeamData>();
     Socket s;
 
     public BHServerThread(Socket s) throws IOException {
@@ -22,7 +25,6 @@ public class BHServerThread extends Thread {
             .getOutputStream()));
         in = new BufferedReader(new InputStreamReader(s.getInputStream()));
         out = new PrintWriter(w);
-        data = new HashMap<String, TeamData>();
     }
     @Override
     public void run() {
@@ -34,49 +36,72 @@ public class BHServerThread extends Thread {
                 try {
                     String command = in.readLine();
                     if (command.equals("Listen")) {
-                        team = in.readLine();
+                        team = in.readLine().trim();
                         System.out.println("Listener for team " + team);
                         if (data.get(team) == null)
                             data.put(team, new TeamData());
-                        data.get(team).getListeners().add(s);
+                        Message m = new Message(s);
+                        data.get(team).getListeners().add(m);
+                        // print listeners
+                        System.out.println(data.get(team));
+                        System.out.println(data);
                         // wait for data
+                        final Message mm = m;
+                        final BufferedReader rr = in;
+                        new Thread(() -> {
+                            try {
+                                rr.readLine();
+                            } catch (IOException e) {
+                                //
+                            } finally {
+                                synchronized (mm) {
+                                    mm.notify();
+                                }
+                            }
+                        }).start();
                         try {
-                            synchronized (s) {
-                                s.wait();
+                            synchronized (m) {
+                                m.wait();
                             }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        data.get(team).getListeners().remove(s);
+                        out.println(m.str);
+                        System.out.println("Received move (notified)");
+                        data.get(team).getListeners().remove(m);
                         final String ateam = team;
                         if (data.get(team).getListeners().isEmpty())
                             new Thread() {
                                 @Override
                                 public void run() {
                                     try {
-                                        sleep(30000);
+                                        sleep(10000);
                                     } catch (Exception e) {
                                         // lol
                                     }
                                     if (data.get(ateam) != null && data.get
-                                        (ateam).getListeners().isEmpty())
+                                        (ateam).getListeners().isEmpty()) {
+                                        System.out.println("Culling " + ateam);
                                         data.remove(ateam);
+                                    }
                                 }
                             }.start();
                     } else if (command.equals("Move")) {
-                        team = in.readLine();
+                        System.out.println(data);
+                        team = in.readLine().trim();
                         String move = in.readLine();
                         System.out.println("Moving " + move + " for " + team);
                         TeamData d = data.get(team);
-                        if (d != null)
-                            for (Socket socket : d.getListeners()) {
-                                new PrintWriter(socket.getOutputStream())
-                                    .print(move);
-                                synchronized (socket) {
-                                    socket.notify();
+                        System.out.println("Notifying " + d);
+                        if (d != null) {
+                            for (Message m : d.getListeners()) {
+                                Socket socket = m.s;
+                                m.str = move;
+                                synchronized (m) {
+                                    m.notify();
                                 }
                             }
-                        ;
+                        }
                     } else {
                         out.println("Invalid command.");
                         System.out.println(command);
