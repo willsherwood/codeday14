@@ -24,12 +24,12 @@ public enum Type {
 			}
 			return wi;
 		} else {
-			try {
-				wb = ImageIO.read(getClass().getResourceAsStream(
-						(white ? "W" : "B") + name() + ".png"));
-			} catch (IOException e) {
-			}
-			return wb;
+try {
+		wb = ImageIO.read(getClass().getResourceAsStream(
+		(white ? "W" : "B") + name() + ".png"));
+		} catch (IOException e) {
 		}
-	}
-}
+		return wb;
+		}
+		}
+		}
