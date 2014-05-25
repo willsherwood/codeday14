@@ -74,11 +74,11 @@ public class Client extends JApplet {
 		g.drawImage(bb, 60 * 8 + 24, 0, null);
 		g.clearRect(0, 60 * 80, 60 * 80 * 2 + 24, 60);
 		int i = 0;
-		for (Piece p : a.piecesTaken) {
+		for (Piece p : b.piecesTaken) {
 			p.drawPiece(g, i++ % 8 * 60, 60 * 8 + ((i - 1) / 8) * 60);
 		}
 		i = 0;
-		for (Piece p : b.piecesTaken) {
+		for (Piece p : a.piecesTaken) {
 			p.drawPiece(g, i++ % 8 * 60 + 60 * 8 + 24,
 					60 * 8 + ((i - 1) / 8) * 60);
 		}

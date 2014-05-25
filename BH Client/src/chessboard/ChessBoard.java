@@ -128,6 +128,11 @@ public class ChessBoard {
 			isSelected = false;
 			return;
 		}
+		if (pieces[from.x][from.y] != null && pieces[to.x][to.y] != null)
+			if (pieces[from.x][from.y].color == pieces[to.x][to.y].color) {
+				isSelected = false;
+				return;
+			}
 		// sendToServer(from, to);
 		// System.out.println("Move\n" + Client.team + "\n" + num + " " + from.x
 		// + " " + from.y
