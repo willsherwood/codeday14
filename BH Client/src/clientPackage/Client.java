@@ -253,8 +253,14 @@ public class Client extends JApplet {
 		g.clearRect(0, 0, 60 * 8 * 2 + 24, 32);
 		g.setFont(new Font("Arial", -1, 20));
 		g.drawString("Player "+(num+1) + (num%2==0?" WHITE":" BLACK"), 16, 30);
-		g.drawString((a.whitesTurn?"WHITE":"BLACK")+"'s turn", 200, 30);
-		g.drawString((b.whitesTurn?"WHITE":"BLACK")+"'s turn", 60*8+24+200, 30);
+		ChessBoard aaa = a;
+		ChessBoard bbb = b;
+		if (num == 2 || num == 3) {
+			aaa = b;
+			bbb = a;
+		}
+		g.drawString((aaa.whitesTurn?"WHITE":"BLACK")+"'s turn", 200, 30);
+		g.drawString((bbb.whitesTurn?"WHITE":"BLACK")+"'s turn", 60*8+24+200, 30);
 		a.drawBoard(aa.getGraphics(), 60, !(num == 0 || num == 3));
 		b.drawBoard(bb.getGraphics(), 60, !(num == 1 || num == 2));
 		g.drawImage(num < 2 ? aa : bb, 0, 32, null);
