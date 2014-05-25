@@ -14,13 +14,13 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import client.Client;
+import clientPackage.Client;
 
 public class ChessBoard {
 
 	public List<Piece> piecesTaken = new ArrayList<>();
 
-	private Piece[][] pieces = new Piece[8][8];
+	public Piece[][] pieces = new Piece[8][8];
 
 	private boolean isSelected = false;
 

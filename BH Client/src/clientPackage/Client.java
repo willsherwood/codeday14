@@ -1,4 +1,4 @@
-package client;
+package clientPackage;
 
 import java.awt.Graphics;
 import java.awt.HeadlessException;
@@ -16,6 +16,8 @@ import javax.swing.JApplet;
 
 import chessboard.ChessBoard;
 import chessboard.Piece;
+import chessboard.PieceColor;
+import chessboard.Type;
 
 public class Client extends JApplet {
 
@@ -138,6 +140,13 @@ public class Client extends JApplet {
 				String move = reader.readLine();
 				// do something
 				System.out.println("Received: " + move);
+				if (move.equals("Add")) {
+					move = reader.readLine();
+					String[] t = move.split(" ");
+					Piece p = new Piece(PieceColor.valueOf(t[1]), Type.valueOf(t[2]));
+					(t[0].equals("0")?a:b).piecesTaken.remove(Integer.parseInt(t[5]));
+					(t[0].equals("0")?a:b).pieces[Integer.parseInt(t[3])][Integer.parseInt(t[4])] = p;
+				}
 				writer.close();
 				reader.close();
 				String[] tt = move.split("[ :]");
