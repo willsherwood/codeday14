@@ -78,6 +78,11 @@ public class ChessBoard {
 							* cellSize, j * cellSize);
 			}
 		}
+		g.setColor(Color.BLACK);
+		for (int i=0; i<8; i++)
+			for (int j=0; j<8 ;j++)
+				g.drawRect(i*60, j*60, 60, 60);
+			
 		if (isSelected) {
 			Color s = new Color(0, 255, 0, 122);
 			g.setColor(s);
