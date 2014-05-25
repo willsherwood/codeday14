@@ -144,7 +144,41 @@ public class ChessBoard {
 	}
 
 	public void moveBoard(Point from, Point to) {
-
+		// castle
+		if (pieces[from.x][from.y].type.equals(Type.KING)) {
+			if (Math.abs(from.x - to.x) == 2 && from.y == to.y) {
+				// castle
+				if (from.x < to.x) {
+					// rook is on the right
+					// and moves left
+					Piece rook = pieces[7][from.y];
+					if (rook.type == Type.ROOK) {
+						moveBoard(new Point(7, from.y), new Point(to.x - 1,
+								to.y));
+					}
+				} else {
+					// rook is on the left
+					// and moves right
+					Piece rook = pieces[0][from.y];
+					if (rook.type == Type.ROOK) {
+						moveBoard(new Point(0, from.y), new Point(to.x + 1,
+								to.y));
+					}
+				}
+			}
+		}
+		if (pieces[from.x][from.y].type.equals(Type.PAWN)) {
+			// en passant
+			if (from.x - to.x != 0) {
+				// en passant is true
+				if (pieces[to.x][to.y] == null) {
+					if (pieces[to.x][from.y].type.equals(Type.PAWN)) {
+						piecesTaken.add(pieces[to.x][from.y]);
+						pieces[to.x][from.y] = null;
+					}
+				}
+			}
+		}
 		if (pieces[to.x][to.y] != null) {
 			piecesTaken.add(pieces[to.x][to.y]);
 		}
