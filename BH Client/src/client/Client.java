@@ -39,17 +39,23 @@ public class Client extends JApplet {
 			public void mousePressed(MouseEvent e) {
 				int x = e.getX();
 				int y = e.getY();
-				boolean board1 = false;
-				if (x > 60 * 8)
-					x -= 24;
-				else {
-					board1 = true;
-					y = 60 * 8 - y;
+				if (y < 60 * 8) {
+					boolean board1 = false;
+					if (x > 60 * 8)
+						x -= 24;
+					else {
+						board1 = true;
+						y = 60 * 8 - y;
+					}
+					x /= 60;
+					y /= 60;
+					(board1 ? a : b).select(board1 ? x : x - 8, y);
+					repaint();
+				} else {
+					y -= 60*8;
+					y /= 4;
+					if (x>60*8);
 				}
-				x /= 60;
-				y /= 60;
-				(board1 ? a : b).select(board1 ? x : x - 8, y);
-				repaint();
 			}
 		});
 		new Thread(new A()).start();
