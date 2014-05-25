@@ -112,17 +112,43 @@ public class BHServerThread extends Thread {
             } else {
                 if (rtype.startsWith("GET ")) {
                     System.out.println("Getting " + rtype);
-                    String message = "Hello, World!";
+                    String message = "Error!";
                     try {
-                        message += "\nFrom: " + rtype.split("[ \r\n\t]+")[1];
+                        String uri = rtype.split("[ \r\n\t]")[1];
+                        if (uri.equals("/")) {
+                            // index
+                            BufferedReader buff = new BufferedReader(new
+                                FileReader(new File("index.html")));
+                            message = "";
+                            String line = "";
+                            while ((line = buff.readLine()) != null)
+                                message += line + "\n";
+                            buff.close();
+                        } else {
+                            BufferedReader buff = new BufferedReader(new
+                                FileReader(new File("room.html")));
+                            message = "";
+                            String line = "";
+                            while ((line = buff.readLine()) != null)
+                                message += line + "\n";
+                            buff.close();
+                            String roomname;
+                            if (uri.startsWith("/game?roomname="))
+                                roomname = uri.substring("/game?roomname="
+                                    .length()+1);
+                            else
+                                roomname = uri.substring(1);
+                            message = message.replace("<!--?ROOMNAME?-->",
+                                roomname);
+                        }
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        message = "Invalid request!";
+                        message = htmlwrap("Invalid request!");
                     }
                     out.print("HTTP/1.1 200 OK\r\n");
                     out.print("Date: " + BHServer.getServerTime() + "\r\n");
                     out.print("Allow: GET\r\n");
                     out.print("Connection: Close\r\n");
-                    out.print("Content-Type: text/plain\r\n");
+                    out.print("Content-Type: text/html\r\n");
                     out.print("Content-Length: " + message.length() +
                         "\r\n\r\n");
                     out.print(message);
@@ -143,5 +169,9 @@ public class BHServerThread extends Thread {
             // uh oh
             out.print("HTTP/1.1 500 Internal Server Error\r\n\r\n");
         }
+    }
+
+    private String htmlwrap(String s) {
+        return "<!DOCTYPE html><html><body>" + s + "</body></html>";
     }
 }
