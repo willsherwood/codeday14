@@ -10,6 +10,10 @@ import java.util.TimeZone;
 
 /**
  * Server class
+ *
+ * I wrote the server.
+ *
+ * @author James Dong
  */
 public class BHServer {
     private ServerSocket ss;
