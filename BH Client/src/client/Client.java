@@ -3,6 +3,7 @@ package client;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -29,12 +30,15 @@ public class Client extends JApplet {
 	public static String team = "A";
 
 	public void init() {
+		team = getParameter("team");
+		if (team == null)
+			team = "A";
 		jap = this;
 		a = new ChessBoard(0);
 		b = new ChessBoard(1);
 		aa = new BufferedImage(60 * 8, 60 * 8, BufferedImage.TYPE_INT_RGB);
 		bb = new BufferedImage(60 * 8, 60 * 8, BufferedImage.TYPE_INT_RGB);
-		addMouseListener(new EmptyMouseListener() {
+		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				int x = e.getX();
