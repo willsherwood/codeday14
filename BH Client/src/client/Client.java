@@ -67,19 +67,20 @@ public class Client extends JApplet {
 
 	}
 
-	public void paint(Graphics g) {
+	public synchronized void paint(Graphics g) {
 		a.drawBoard(aa.getGraphics(), 60, true);
 		b.drawBoard(bb.getGraphics(), 60, false);
 		g.drawImage(aa, 0, 0, null);
 		g.drawImage(bb, 60 * 8 + 24, 0, null);
-		g.clearRect(0, 60*80, 60*80*2+24, 60);
+		g.clearRect(0, 60 * 80, 60 * 80 * 2 + 24, 60);
 		int i = 0;
 		for (Piece p : a.piecesTaken) {
-			p.drawPiece(g, i++ * 60, 60 * 8);
+			p.drawPiece(g, i++ % 8 * 60, 60 * 8 + ((i - 1) / 8) * 60);
 		}
 		i = 0;
 		for (Piece p : b.piecesTaken) {
-			p.drawPiece(g, i++ * 60 + 60 * 8 + 24, 60 * 8);
+			p.drawPiece(g, i++ % 8 * 60 + 60 * 8 + 24,
+					60 * 8 + ((i - 1) / 8) * 60);
 		}
 	}
 
