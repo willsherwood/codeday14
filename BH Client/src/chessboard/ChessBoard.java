@@ -18,7 +18,7 @@ import client.Client;
 
 public class ChessBoard {
 
-	private List<Piece> piecesTaken = new ArrayList<>();
+	public List<Piece> piecesTaken = new ArrayList<>();
 
 	private Piece[][] pieces = new Piece[8][8];
 
@@ -78,10 +78,9 @@ public class ChessBoard {
 		if (isSelected) {
 			Color s = new Color(0, 255, 0, 122);
 			g.setColor(s);
-			g.fillRect(ps.x * cellSize, !inverted ? ps.y * cellSize : (7 - ps.y)
-					* cellSize, cellSize, cellSize);
+			g.fillRect(ps.x * cellSize, !inverted ? ps.y * cellSize
+					: (7 - ps.y) * cellSize, cellSize, cellSize);
 		}
-
 	}
 
 	public void sendToServer(String s) {
@@ -121,11 +120,14 @@ public class ChessBoard {
 	}
 
 	public void move(Point from, Point to) {
-		if (pieces[to.x][to.y] != null) {
-			piecesTaken.add(pieces[to.x][to.y]);
+		if (from.equals(to)) {
+			isSelected = false;
+			return;
 		}
-		pieces[to.x][to.y] = pieces[from.x][from.y];
-		pieces[from.x][from.y] = null;
+		if (pieces[from.x][from.y] == null) {
+			isSelected = false;
+			return;
+		}
 		// sendToServer(from, to);
 		// System.out.println("Move\n" + Client.team + "\n" + num + " " + from.x
 		// + " " + from.y
@@ -134,6 +136,15 @@ public class ChessBoard {
 				+ from.y + ":" + to.x + " " + to.y);
 		// wait for board
 		// redraw
+	}
+
+	public void moveBoard(Point from, Point to) {
+
+		if (pieces[to.x][to.y] != null) {
+			piecesTaken.add(pieces[to.x][to.y]);
+		}
+		pieces[to.x][to.y] = pieces[from.x][from.y];
+		pieces[from.x][from.y] = null;
 		Client.jap.repaint();
 
 	}

@@ -2,6 +2,7 @@ package client;
 
 import java.awt.Graphics;
 import java.awt.HeadlessException;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -11,16 +12,16 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import javax.swing.JApplet;
-import javax.swing.JOptionPane;
 
 import chessboard.ChessBoard;
+import chessboard.Piece;
 
 public class Client extends JApplet {
 
 	public static JApplet jap;
-	
-	private ChessBoard a;
-	private ChessBoard b;
+
+	public static ChessBoard a;
+	public static ChessBoard b;
 
 	private BufferedImage aa;
 	private BufferedImage bb;
@@ -43,11 +44,11 @@ public class Client extends JApplet {
 					x -= 24;
 				else {
 					board1 = true;
-					y = 60*8 - y;
+					y = 60 * 8 - y;
 				}
 				x /= 60;
 				y /= 60;
-				(board1 ? a : b).select(board1?x:x-8, y);
+				(board1 ? a : b).select(board1 ? x : x - 8, y);
 				repaint();
 			}
 		});
@@ -71,8 +72,17 @@ public class Client extends JApplet {
 		b.drawBoard(bb.getGraphics(), 60, false);
 		g.drawImage(aa, 0, 0, null);
 		g.drawImage(bb, 60 * 8 + 24, 0, null);
+		g.clearRect(0, 60*80, 60*80*2+24, 60);
+		int i = 0;
+		for (Piece p : a.piecesTaken) {
+			p.drawPiece(g, i++ * 60, 60 * 8);
+		}
+		i = 0;
+		for (Piece p : b.piecesTaken) {
+			p.drawPiece(g, i++ * 60 + 60 * 8 + 24, 60 * 8);
+		}
 	}
-	
+
 	public static class A implements Runnable {
 		public void run() {
 			System.out.println("Listener thread");
@@ -80,8 +90,7 @@ public class Client extends JApplet {
 			PrintWriter writer = null;
 			BufferedReader reader = null;
 			try {
-				socket = new Socket(
-						"192.168.1.252", 8080);
+				socket = new Socket("192.168.1.252", 8080);
 			} catch (HeadlessException | IOException e) {
 				e.printStackTrace();
 			}
@@ -109,9 +118,17 @@ public class Client extends JApplet {
 				System.out.println("Received: " + move);
 				writer.close();
 				reader.close();
+				String[] tt = move.split("[ :]");
+				(move.charAt(0) == '0' ? Client.a : Client.b).moveBoard(
+						new Point(Integer.parseInt(tt[1]), Integer
+								.parseInt(tt[2])),
+						new Point(Integer.parseInt(tt[3]), Integer
+								.parseInt(tt[4])));
 				// make another listener
 				new Thread(new A()).start();
-			} catch (Throwable t) {writer.close();}
+			} catch (Throwable t) {
+				writer.close();
+			}
 		}
 	}
 }

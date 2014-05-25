@@ -5,7 +5,7 @@ import java.awt.Image;
 
 public class Piece {
 
-	private PieceColor color;
+	public PieceColor color;
 	private Type type;
 
 	public Piece(PieceColor c, Type t) {
