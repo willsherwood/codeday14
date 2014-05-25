@@ -46,7 +46,7 @@ footer {
 }
 
 .download-button::before {
-    content: url(/img/arrow.png);
+    content: url(../img/arrow.png);
     vertical-align: middle;
     position: relative;
     top: 3px;
