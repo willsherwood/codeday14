@@ -2,6 +2,9 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeSet;
@@ -13,24 +16,26 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BHServerThread extends Thread {
     PrintWriter out;
     BufferedReader in;
-    static ConcurrentHashMap<String, TeamData> data = new
-        ConcurrentHashMap<String,
-        TeamData>();
+    BufferedOutputStream bout;
+    static ConcurrentHashMap<String, TeamData> data = new ConcurrentHashMap<>
+        ();
     Socket s;
 
     public BHServerThread(Socket s) throws IOException {
         // here's where you would handle this
         this.s = s;
-        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(s
-            .getOutputStream()));
+        OutputStream o = s.getOutputStream();
+        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(o));
         in = new BufferedReader(new InputStreamReader(s.getInputStream()));
         out = new PrintWriter(w);
+        bout = new BufferedOutputStream(o);
     }
     @Override
     public void run() {
         String team;
         try {
             String rtype = in.readLine();
+            if (rtype == null) return;
             if (rtype.equals("X-APPLICATION")) {
                 // special
                 try {
@@ -48,14 +53,16 @@ public class BHServerThread extends Thread {
                         // wait for data
                         final Message mm = m;
                         final BufferedReader rr = in;
-                        new Thread(() -> {
-                            try {
-                                rr.readLine();
-                            } catch (IOException e) {
-                                //
-                            } finally {
-                                synchronized (mm) {
-                                    mm.notify();
+                        new Thread(new Runnable() {
+                            public void run() {
+                                try {
+                                    rr.readLine();
+                                } catch (IOException e) {
+                                    //
+                                } finally {
+                                    synchronized (mm) {
+                                        mm.notify();
+                                    }
                                 }
                             }
                         }).start();
@@ -124,6 +131,25 @@ public class BHServerThread extends Thread {
                             while ((line = buff.readLine()) != null)
                                 message += line + "\n";
                             buff.close();
+                        } else if (uri.equals("/Client.jar")) {
+                            out.print("HTTP/1.1 200 OK\r\n");
+                            out.print("Date: " + BHServer.getServerTime() + "\r\n");
+                            out.print("Allow: GET\r\n");
+                            out.print("Connection: Close\r\n");
+                            out.print("Content-Type: " +
+                                "application/java-archive\r\n\r\n");
+                            out.print("Last-Modified: " + BHServer
+                                .getServerTime() + "\r\n");
+                            out.flush();
+                            // bout is a buffered outputstream
+                            // read from Client.jar into bout
+                            Files.copy(FileSystems.getDefault().getPath
+                                ("Client.jar"), bout);
+                            bout.flush();
+                            out.close();
+                            bout.close();
+                            in.close();
+                            return;
                         } else {
                             BufferedReader buff = new BufferedReader(new
                                 FileReader(new File("room.html")));
@@ -135,7 +161,7 @@ public class BHServerThread extends Thread {
                             String roomname;
                             if (uri.startsWith("/game?roomname="))
                                 roomname = uri.substring("/game?roomname="
-                                    .length()+1);
+                                    .length());
                             else
                                 roomname = uri.substring(1);
                             message = message.replace("<!--?ROOMNAME?-->",
@@ -164,6 +190,7 @@ public class BHServerThread extends Thread {
             out.flush();
             in.close();
             out.close();
+            bout.close();
         } catch (IOException e) {
             e.printStackTrace();
             // uh oh
