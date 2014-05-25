@@ -33,6 +33,7 @@ public class BHServerThread extends Thread {
         mimeTypes.put("bmp", "image/bmp");
         mimeTypes.put("js", "text/javascript");
         mimeTypes.put("css", "text/css");
+        mimeTypes.put("svg", "image/svg+xml");
     }
 
     public BHServerThread(Socket s) throws IOException {
