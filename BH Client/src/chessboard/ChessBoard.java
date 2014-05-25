@@ -18,7 +18,7 @@ import clientPackage.Client;
 
 public class ChessBoard {
 
-	public List<Piece> piecesTaken = new ArrayList<>();
+	public transient List<Piece> piecesTaken = new ArrayList<>();
 
 	public Piece[][] pieces = new Piece[8][8];
 

@@ -41,7 +41,7 @@ public class Client extends JApplet {
 	public static String team = "A";
 
 	public void init() {
-		team = getParameter("team");
+		team = JOptionPane.showInputDialog("Please enter team name");
 		if (team == null)
 			team = "A";
 		jap = this;
@@ -65,7 +65,7 @@ public class Client extends JApplet {
 					return;
 				}
 				int x = e.getX();
-				int y = e.getY();
+				int y = e.getY() - 32;
 				if (y < 60 * 8) {
 					boolean board1 = false;
 					if (x > 60 * 8)
@@ -171,21 +171,21 @@ public class Client extends JApplet {
 	public synchronized void paint(Graphics g) {
 		a.drawBoard(aa.getGraphics(), 60, true);
 		b.drawBoard(bb.getGraphics(), 60, false);
-		g.drawImage(aa, 0, 0, null);
-		g.drawImage(bb, 60 * 8 + 24, 0, null);
-		g.clearRect(0, 60 * 8, 60 * 8 * 2 + 24, 60 * 4);
+		g.drawImage(aa, 0, 32, null);
+		g.drawImage(bb, 60 * 8 + 24, 32, null);
+		g.clearRect(0, 32+60 * 8, 60 * 8 * 2 + 24, 60 * 4);
 		int i = 0;
 		for (Piece p : b.piecesTaken) {
-			p.drawPiece(g, i++ % 8 * 60, 60 * 8 + ((i - 1) / 8) * 60);
+			p.drawPiece(g, i++ % 8 * 60,32+ 60 * 8 + ((i - 1) / 8) * 60);
 		}
 		i = 0;
 		for (Piece p : a.piecesTaken) {
 			p.drawPiece(g, i++ % 8 * 60 + 60 * 8 + 24,
-					60 * 8 + ((i - 1) / 8) * 60);
+					60 * 8 + ((i - 1) / 8) * 60+32);
 		}
 		if (yolo1 != 0 && yolo2 != 0) {
 			g.setColor(new Color(0, 0, 255, 100));
-			g.fillRect(yolo1 - 30, yolo2 - 30, 60, 60);
+			g.fillRect(yolo1 - 30, yolo2, 60, 2+60);
 		}
 	}
 
@@ -214,6 +214,9 @@ public class Client extends JApplet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			writer.write("X-APPLICATION\n");
+			writer.write("Login\n" + team + "\n");
+			writer.flush();
 			writer.write("X-APPLICATION\n");
 			writer.write("Listen\n" + team + "\n");
 			// write some move
