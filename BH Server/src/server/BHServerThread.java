@@ -20,6 +20,20 @@ public class BHServerThread extends Thread {
     static ConcurrentHashMap<String, TeamData> data = new ConcurrentHashMap<>
         ();
     Socket s;
+    public static final HashMap<String, String> mimeTypes = new HashMap<>();
+
+    static {
+        mimeTypes.put("html", "text/html");
+        mimeTypes.put("jar", "application/java-archive");
+        mimeTypes.put("class", "application/java-byte-code");
+        mimeTypes.put("png", "image/png");
+        mimeTypes.put("jpg", "image/jpeg");
+        mimeTypes.put("jpeg", "image/jpeg");
+        mimeTypes.put("gif", "image/gif");
+        mimeTypes.put("bmp", "image/bmp");
+        mimeTypes.put("js", "text/javascript");
+        mimeTypes.put("css", "text/css");
+    }
 
     public BHServerThread(Socket s) throws IOException {
         // here's where you would handle this
@@ -93,6 +107,13 @@ public class BHServerThread extends Thread {
                                     }
                                 }
                             }.start();
+                    } else if (command.equals("Login")) {
+                        team = in.readLine().trim();
+                        if (data.get(team) == null)
+                            data.put(team, new TeamData());
+                        out.println(data.get(team).x);
+                        data.get(team).x = (data.get(team).x + 1) % 4;
+                        out.flush();
                     } else if (command.equals("Move")) {
                         System.out.println(data);
                         team = in.readLine().trim();
@@ -131,41 +152,40 @@ public class BHServerThread extends Thread {
                             while ((line = buff.readLine()) != null)
                                 message += line + "\n";
                             buff.close();
-                        } else if (uri.equals("/Client.jar")) {
+                        } else if (uri.substring(1).contains("/")) {
                             out.print("HTTP/1.1 200 OK\r\n");
                             out.print("Date: " + BHServer.getServerTime() + "\r\n");
                             out.print("Allow: GET\r\n");
                             out.print("Connection: Close\r\n");
                             out.print("Content-Type: " +
-                                "application/java-archive\r\n\r\n");
+                                getMimeType(uri.substring(1+uri.lastIndexOf('.'))) +
+                                "\r\n");
                             out.print("Last-Modified: " + BHServer
-                                .getServerTime() + "\r\n");
+                                .getServerTime() + "\r\n\r\n");
                             out.flush();
                             // bout is a buffered outputstream
                             // read from Client.jar into bout
                             Files.copy(FileSystems.getDefault().getPath
-                                ("Client.jar"), bout);
+                                (uri.substring(1)), bout);
                             bout.flush();
                             out.close();
                             bout.close();
                             in.close();
                             return;
                         } else {
-                            BufferedReader buff = new BufferedReader(new
-                                FileReader(new File("room.html")));
-                            message = "";
-                            String line = "";
-                            while ((line = buff.readLine()) != null)
-                                message += line + "\n";
-                            buff.close();
-                            String roomname;
-                            if (uri.startsWith("/game?roomname="))
-                                roomname = uri.substring("/game?roomname="
-                                    .length());
-                            else
-                                roomname = uri.substring(1);
-                            message = message.replace("<!--?ROOMNAME?-->",
-                                roomname);
+                            message = htmlwrap("404 Not Found");
+                            out.print("HTTP/1.1 404 Not Found\r\n");
+                            out.print("Date: " + BHServer.getServerTime() + "\r\n");
+                            out.print("Allow: GET\r\n");
+                            out.print("Connection: Close\r\n");
+                            out.print("Content-Type: text/html\r\n");
+                            out.print("Content-Length: " + message.length() +
+                                "\r\n\r\n");
+                            out.print(message);
+                            out.flush();
+                            in.close();
+                            out.close();
+                            bout.close();
                         }
                     } catch (ArrayIndexOutOfBoundsException e) {
                         message = htmlwrap("Invalid request!");
@@ -196,6 +216,13 @@ public class BHServerThread extends Thread {
             // uh oh
             out.print("HTTP/1.1 500 Internal Server Error\r\n\r\n");
         }
+    }
+
+    private String getMimeType(String t) {
+        String s = mimeTypes.get(t);
+        if (s != null)
+            return s;
+        return "text/plain";
     }
 
     private String htmlwrap(String s) {

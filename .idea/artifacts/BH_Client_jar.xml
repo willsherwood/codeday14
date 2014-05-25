@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="BH Client:jar">
-    <output-path>$PROJECT_DIR$/BH Server</output-path>
+  <artifact type="jar" name="BH Client:jar">
+    <output-path>$PROJECT_DIR$/BH Server/downloads</output-path>
     <root id="archive" name="Client.jar">
       <element id="module-output" name="BH Client" />
     </root>
