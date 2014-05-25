@@ -52,9 +52,14 @@ public class Client extends JApplet {
 					(board1 ? a : b).select(board1 ? x : x - 8, y);
 					repaint();
 				} else {
-					y -= 60*8;
+					boolean board1 = false;
+					y -= 60 * 8;
 					y /= 4;
-					if (x>60*8);
+					if (x > 60 * 8)
+						x -= 24;
+					else
+						board1 = true;
+					int index = x + y * 8;
 				}
 			}
 		});
