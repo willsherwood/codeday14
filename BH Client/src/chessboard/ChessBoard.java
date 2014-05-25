@@ -172,10 +172,12 @@ public class ChessBoard {
 			if (from.x - to.x != 0) {
 				// en passant is true
 				if (pieces[to.x][to.y] == null) {
-					if (pieces[to.x][from.y].type.equals(Type.PAWN)) {
-						piecesTaken.add(pieces[to.x][from.y]);
-						pieces[to.x][from.y] = null;
-					}
+					if (pieces[to.x] != null)
+						if (pieces[to.x][from.y] != null)
+							if (pieces[to.x][from.y].type.equals(Type.PAWN)) {
+								piecesTaken.add(pieces[to.x][from.y]);
+								pieces[to.x][from.y] = null;
+							}
 				}
 			}
 		}

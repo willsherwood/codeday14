@@ -48,7 +48,7 @@ public class Client extends JApplet {
 	public static Socket listenerSocket = null;
 
 	public void init() {
-		team = JOptionPane.showInputDialog("Please enter team name");
+		team = JOptionPane.showInputDialog("Please enter room name");
 		if (team == null)
 			team = "A";
 		jap = this;
@@ -333,6 +333,7 @@ public class Client extends JApplet {
 				if (!Thread.interrupted())
 					(listenThread = new Thread(new A())).start();
 			} catch (Throwable t) {
+				t.printStackTrace();
 				writer.println("Closing");
 				try {
 					reader.close();
