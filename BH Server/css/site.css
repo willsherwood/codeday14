@@ -1,0 +1,65 @@
+html {
+    text-align: center;
+}
+
+body {
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding: 20px;
+    font-size: 14px;
+    color: #555;
+    max-width: 800px;
+    text-align: left;
+    display: inline-block;
+}
+
+h1 {
+    font-weight: 100;
+    text-align: center;
+    font-size: 72px;
+    margin-bottom: 0;
+    color: black;
+}
+h2 {
+    font-family: "Source Code Pro", "Consolas", "Menlo", "Lucida Console", "Courier New", monospace;
+    font-weight: 200;
+    text-align: center;
+    font-size: 30px;
+    font-style: italic;
+    color: #888;
+}
+
+footer {
+    margin-top: 30px;
+    font-size: 10px;
+}
+
+.download-button {
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    background-color: #2DC42F;
+    border-radius: 6px;
+    box-shadow: inset 0 -2px 15px -7px black;
+    margin: 10px;
+    vertical-align: middle;
+}
+
+.download-button::before {
+    content: url(/img/arrow.png);
+    vertical-align: middle;
+    position: relative;
+    top: 3px;
+}
+
+.download-button#client {
+    background-color: #2DC42F;
+}
+
+.download-button#server {
+    background-color: #3856ff;
+}
+
+section {
+    margin: 40px 0;
+    text-align: center;
+}

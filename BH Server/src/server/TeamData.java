@@ -11,8 +11,10 @@ import java.util.HashSet;
  */
 public class TeamData {
     HashSet<Message> listeners;
+    public int x;
 
     public TeamData() {
+        x = 0;
         listeners = new HashSet<Message>();
     }
 
